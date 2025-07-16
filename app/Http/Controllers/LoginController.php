@@ -19,20 +19,21 @@ class LoginController extends Controller
     function loginAuth(LoginRequest $request)
     {
 
-    
+
 
         $request->validated();
+
         $validData['username'] = $request->username;
         $validData['password'] = $request->password;
+        $remember = $request->has('remember') ;
 
 
-        if ($request->has('remember')) {
 
-            if (Auth::guard('admins')->attempt($validData, true)) {
-                $request->session()->regenerate();
-                return redirect("/");
-            }
+        if (Auth::guard('admins')->attempt($validData, $remember)) {
+            $request->session()->regenerate();
+            return redirect("/");
         }
+
         return redirect()->route('login');
     }
 
@@ -41,11 +42,11 @@ class LoginController extends Controller
     function logout(Request $request)
     {
         Auth::guard('admins')->logout();
-        
+
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect() -> route('login');
+        return redirect()->route('login');
     }
 }
